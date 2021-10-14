@@ -10,6 +10,9 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 using uint = unsigned int;
 using Cambio = std::vector<uint>;
@@ -27,13 +30,17 @@ uint encontrarValorMayor(ListaPagado&);
 int mayorDenominacion(DineroCirculante&, uint, uint);
 void imprimirCambioDevuelto(Cambio&);
 void imprimirDenominaciones(DineroCirculante&);
+void recuperarDenominaciones(PruebasDineroCirculante& tabla_denominaciones);
+void recuperarCantidadesPorPagar(ListaPagado&);
 
 int main() {
     std::chrono::system_clock::time_point inicio, final;
     micro_segundos duracion;
-    PruebasDineroCirculante tabla_dinero_circulante = {{500, 200, 100, 25, 10, 5, 1},{8, 6, 4, 1}};
+    PruebasDineroCirculante tabla_dinero_circulante;
+    recuperarDenominaciones(tabla_dinero_circulante);
     DineroCirculante denominaciones = {500, 200, 100, 25, 10, 5, 1};
-    ListaPagado cambio_a_devolver = {8, 25, 47, 356, 1025, 642};
+    ListaPagado cambio_a_devolver;
+    recuperarCantidadesPorPagar(cambio_a_devolver);
     Cambio cambio_devuelto;
     TablaCambio tabla_cambio;
     for(int j = 0; j < tabla_dinero_circulante.size(); ++j){
@@ -88,6 +95,50 @@ int main() {
         tabla_cambio.clear();
     }
     return 0;
+}
+
+void recuperarCantidadesPorPagar(ListaPagado& lista){
+    std::ifstream archivo_denominaciones("pagado.txt");
+    std::string contenido_archivo = "", numero = "";
+    std::stringstream buffer;
+    buffer << archivo_denominaciones.rdbuf();
+    contenido_archivo = buffer.str();
+    size_t pos = 0;
+    for(int i = 0; i < contenido_archivo.size(); ++i){
+        if(contenido_archivo[i] == ','){
+            lista.push_back(std::stoi(numero));
+            numero.clear();
+        }
+        else{
+            numero += contenido_archivo[i];
+        }
+    }
+    lista.push_back(std::stoi(numero));
+}
+
+void recuperarDenominaciones(PruebasDineroCirculante& tabla_denominaciones){
+    std::ifstream archivo_denominaciones("denominaciones.txt");
+    DineroCirculante denominaciones;
+    std::string contenido_archivo = "", numero = "";
+    std::stringstream buffer;
+    buffer << archivo_denominaciones.rdbuf();
+    contenido_archivo = buffer.str();
+    size_t pos = 0;
+    for(int i = 0; i < contenido_archivo.size(); ++i){
+        if(contenido_archivo[i] == ','){
+            denominaciones.push_back(std::stoi(numero));
+            numero.clear();
+        }
+        else if(contenido_archivo[i] == '\n'){
+            tabla_denominaciones.push_back(denominaciones);
+            denominaciones.clear();
+            numero.clear();
+        }
+        else{
+            numero += contenido_archivo[i];
+        }
+    }
+    tabla_denominaciones.push_back(denominaciones);
 }
 
 TablaCambio& hacerTabla(DineroCirculante& denominaciones, uint valor_maximo){
