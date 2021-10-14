@@ -2,6 +2,7 @@
  * Practica 2
  * Seccion 1.1 Devolver el cambio
  * Luis Antonio Montoya Morales
+ * Fecha: 14/10/2021
  * */
 
 #include <iostream>
