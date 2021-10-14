@@ -38,7 +38,6 @@ int main() {
     micro_segundos duracion;
     PruebasDineroCirculante tabla_dinero_circulante;
     recuperarDenominaciones(tabla_dinero_circulante);
-    DineroCirculante denominaciones = {500, 200, 100, 25, 10, 5, 1};
     ListaPagado cambio_a_devolver;
     recuperarCantidadesPorPagar(cambio_a_devolver);
     Cambio cambio_devuelto;
